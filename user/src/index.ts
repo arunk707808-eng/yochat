@@ -1,6 +1,6 @@
 import express from "express";
 import dotenv from "dotenv"
-import { connectCacheDb } from "./config/chachedb.js";
+import cors from "cors"
 import { connectDB } from "./config/db.js";
 import { createClient } from "redis";
 dotenv.config()
@@ -17,6 +17,7 @@ const port = process.env.PORT || 5000;
 import userRoutes from "./routes/user.js"
 import { connectRabbitMq } from "./config/rabbitmq.js";
 app.use(express.json())
+app.use(cors())
 app.get("/", (req, res) => {
   return res.status(200).json({ message: "hello from server" })
 })
