@@ -76,3 +76,51 @@ export const getAllChat = TryCatch(async (req: AuthenticatedRequest, res: Respon
     chats: chatWithUserData
   })
 })
+
+
+export const sendMessage = TryCatch(async(req:AuthenticatedRequest, res:Response)=>{
+  const senderId = req.user?._id
+  const {chatId, text} = req.body
+  const imageFile = req.file
+  if(!senderId){
+    return res.status(401).json({
+      message:"unauthorized"
+    })
+  }
+  if(!chatId){
+    return res.status(400).json({
+      message:"chatId is required"
+    })
+  }
+  if(!text && !imageFile){
+    return res.status(400).json({
+      message:"text or image required"
+    })
+  }
+
+  const chat =  await Chat.findById(chatId)
+  if(!chat){
+    return res.status(404).json({
+      message:"chat not found"
+    })
+  }
+  const isUserInChat = chat.users.some(
+    (userId)=> userId.toString() === senderId.toString()
+  )
+   if(!isUserInChat){
+    return res.status(403).json({
+      message:"you are not participent of this chat"
+    })
+  }
+
+  const otherUserId = chat.users.find(
+    (userId)=> userId.toString() === senderId.toString()
+  )
+  if(!otherUserId){
+    return res.status(403).json({
+      message:"no other user"
+    })
+  }
+  //socket setup
+  
+})
